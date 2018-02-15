@@ -32,7 +32,7 @@ public class SearchResultsProcessor{
 	@Autowired
 	ScapperService scrapperService;
 
-	@Scheduled(fixedDelayString = "#{new Double((T(java.lang.Math).random() + 1) * 1000).intValue()}")
+	@Scheduled(initialDelay=2000,fixedDelayString = "#{new Double((T(java.lang.Math).random() + 1) * 1000).intValue()}")
 	public void process() throws Exception {
 
 		List<SearchTask> searchTasks = searchTaskService.findActiveSearchTasks();
