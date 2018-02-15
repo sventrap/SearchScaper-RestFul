@@ -8,6 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import elasticsearch.searchscraper.domain.ScrapeResult;
@@ -31,6 +32,7 @@ public class SearchResultsProcessor{
 	@Autowired
 	ScapperService scrapperService;
 
+	@Scheduled(fixedDelayString = "#{new Double((T(java.lang.Math).random() + 1) * 1000).intValue()}")
 	public void process() throws Exception {
 
 		List<SearchTask> searchTasks = searchTaskService.findActiveSearchTasks();
@@ -41,8 +43,7 @@ public class SearchResultsProcessor{
 			if(null != keywords){
 				List<String> keywordList = new ArrayList<String>(Arrays.asList(keywords.split(",")));
 				List<ScrapeResult> result = getScrapeResults(keywordList);
-				List<SearchResult> searchResults = getSearchResults(searchTask,result);
-				saveSearchResult(searchResults);
+				processSearchResults(searchTask,result);
 			}
 		}
 	}
@@ -58,8 +59,7 @@ public class SearchResultsProcessor{
 		return results;
 	}
 	
-	private List<SearchResult> getSearchResults(SearchTask searchTask, List<ScrapeResult> results) throws Exception {
-		List<SearchResult> searchResults = new ArrayList<>();
+	private void processSearchResults(SearchTask searchTask, List<ScrapeResult> results) throws Exception {
 		SearchResult searchResult;
 		for(ScrapeResult scrapeResult: results){
 			searchResult = new SearchResult();
@@ -76,15 +76,6 @@ public class SearchResultsProcessor{
 			UrlContents urlContent = scrapperService.getContents(scrapeResult.getUrl());
 			searchResult.setHttpStatusCode(String.valueOf(urlContent.getHttpStatusCode()));
 			searchResult.setContent(urlContent.getContent());
-			
-			searchResults.add(searchResult);
-		}
-		
-		return searchResults;
-	}
-	
-	private void saveSearchResult(List<SearchResult> searchResults) throws Exception{
-		for(SearchResult searchResult:searchResults){
 			searchResultsService.save(searchResult);
 		}
 	}

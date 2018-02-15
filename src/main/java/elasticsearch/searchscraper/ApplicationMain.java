@@ -7,10 +7,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import elasticsearch.searchscraper.config.ElasticSearchConfiguration;
 
 @SpringBootConfiguration
+@EnableScheduling
 @Import(value = ElasticSearchConfiguration.class)
 public class ApplicationMain implements CommandLineRunner {
 	private static Logger logger = LoggerFactory.getLogger(ApplicationMain.class);
@@ -30,6 +32,7 @@ public class ApplicationMain implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+		logger.info("############################################ Starting #########################################");
 		logger.info("\n###############\nUsage \n {} \n {} \n {}\n###################",
 				"java -jar SearchScaper-RestFul-0.0.1-SNAPSHOT-spring-boot.jar 1 : will create index and searchTask",
 				"java -jar SearchScaper-RestFul-0.0.1-SNAPSHOT-spring-boot.jar 2 : will create index for searchresult",
@@ -47,7 +50,7 @@ public class ApplicationMain implements CommandLineRunner {
 		} else{
 			searchResultsProcessor.process();
 		}
-
-		System.exit(0);
+		
+		logger.info("############################################ FINISHED #########################################");
 	}
 }

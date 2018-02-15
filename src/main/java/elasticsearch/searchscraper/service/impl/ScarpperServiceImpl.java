@@ -79,9 +79,9 @@ public class ScarpperServiceImpl implements ScapperService {
 		connection.setConnectTimeout(60000);
 		connection.setReadTimeout(60000);
 		connection.addRequestProperty("User-Agent", "Google Chrome/36");
-
+		Scanner reader = null;
 		try{
-			final Scanner reader = new Scanner(connection.getInputStream(), "UTF-8");
+			reader = new Scanner(connection.getInputStream(), "UTF-8");
 	
 			urlContents.setHttpStatusCode(connection.getResponseCode());
 			while (reader.hasNextLine()) {
@@ -92,6 +92,10 @@ public class ScarpperServiceImpl implements ScapperService {
 			reader.close();
 		}catch(IOException e){
 			urlContents.setHttpStatusCode(connection.getResponseCode());
+		} finally {
+			if(null != reader) {
+				reader.close();
+			}
 		}
 		
 		urlContents.setContent(content.toString());
